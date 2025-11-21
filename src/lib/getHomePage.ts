@@ -3,7 +3,9 @@ export async function getHomePageContent() {
     const base = process.env.NEXT_PUBLIC_PAYLOAD_URL;
     if (!base) throw new Error("Missing NEXT_PUBLIC_PAYLOAD_URL");
 
-    // Load Homepage Document
+    // ------------------------------
+    // ⭐ Load Homepage Document
+    // ------------------------------
     const homeRes = await fetch(`${base}/api/home-page?limit=1`, {
       next: { revalidate: 30 },
     });
@@ -14,65 +16,27 @@ export async function getHomePageContent() {
     }
 
     const homeData = await homeRes.json();
-    const page = homeData.docs[0];
+    const page = homeData.docs?.[0];
     if (!page) return null;
 
-    // ------------------------------
-    // ⭐ Load FAQs
-    // ------------------------------
-    let faqs: any[] = [];
-
-    if (page.faq?.faqs?.length) {
-      // Only selected ones
-      const ids = page.faq.faqs.join(",");
-      const faqRes = await fetch(`${base}/api/faqs?where[id][in]=${ids}`, {
-        next: { revalidate: 30 },
-      });
-
-      const faqData = await faqRes.json();
-      faqs = faqData.docs ?? [];
-    } else {
-      // All
-      const faqRes = await fetch(`${base}/api/faqs?sort=-updatedAt`, {
-        next: { revalidate: 30 },
-      });
-
-      const faqData = await faqRes.json();
-      faqs = faqData.docs ?? [];
-    }
+    // ======================================================
+    // Since FAQ + Testimonials groups are REMOVED in schema,
+    // we SKIP loading them entirely.
+    // ======================================================
 
     // ------------------------------
-    // ⭐ Load Testimonials
-    // ------------------------------
-    let testimonials: any[] = [];
-
-    if (page.testimonials?.items?.length) {
-      const ids = page.testimonials.items.join(",");
-      const tRes = await fetch(
-        `${base}/api/testimonials?where[id][in]=${ids}`,
-        { next: { revalidate: 30 } }
-      );
-
-      const tData = await tRes.json();
-      testimonials = tData.docs ?? [];
-    } else {
-      // Featured fallback
-      const tRes = await fetch(
-        `${base}/api/testimonials?where[featured][equals]=true&sort=-updatedAt`,
-        { next: { revalidate: 30 } }
-      );
-
-      const tData = await tRes.json();
-      testimonials = tData.docs ?? [];
-    }
-
-    // ------------------------------
-    // ⭐ Return Unified Object
+    // ⭐ Return Sanitized Homepage Data
     // ------------------------------
     return {
-      ...page,
-      faqs,
-      testimonials,
+      hero: page.hero ?? null,
+      features: page.features ?? null,
+      demo: page.demo ?? null,
+      pricing: page.pricing ?? null,
+      ctaShowcase: page.ctaShowcase ?? null,
+
+      // These purposely return null because schema has them removed
+      faqs: null,
+      testimonials: null,
     };
   } catch (error) {
     console.error("❌ Error loading homepage content:", error);

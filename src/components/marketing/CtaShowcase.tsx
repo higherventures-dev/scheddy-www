@@ -1,53 +1,57 @@
-// src/components/marketing/CtaShowcase.tsx
-
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 
-// ❌ REMOVE import { Media } from "@/payload-types"
-// Marketing site cannot import Payload-generated types.
-
-// Define a safe fallback type:
 type CtaShowcaseProps = {
   data?: {
     title?: string;
     subtitle?: string;
-    image?: {
-      url?: string;
+    ctaLabel?: string;
+    ctaLink?: string;
+    logos?: {
+      image?: { url?: string };
       alt?: string;
-    };
-    buttonText?: string;
-    buttonLink?: string;
+    }[];
   };
 };
 
 export default function CtaShowcase({ data }: CtaShowcaseProps) {
+  if (!data) return null;
+
+  const logos = Array.isArray(data.logos) ? data.logos : [];
+
   return (
     <div className="container mx-auto px-6 py-24 text-center">
-      <h2 className="text-3xl font-bold mb-4">
-        {data?.title ?? "Ready to Transform Your Workflow?"}
-      </h2>
 
-      <p className="text-lg text-muted-foreground mb-8">
-        {data?.subtitle ?? "Join hundreds of creators already using Scheddy."}
-      </p>
+      {data.title && (
+        <h2 className="text-3xl font-bold mb-4">{data.title}</h2>
+      )}
 
-      {data?.image?.url && (
-        <div className="mb-10 flex justify-center">
-          <Image
-            src={data.image.url}
-            alt={data.image.alt ?? "Showcase Image"}
-            width={900}
-            height={500}
-            className="rounded-xl shadow-lg"
-          />
+      {data.subtitle && (
+        <p className="text-lg text-slate-400 mb-10">{data.subtitle}</p>
+      )}
+
+      {logos.length > 0 && (
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12 items-center justify-center">
+          {logos.map((logo, i) =>
+            logo.image?.url ? (
+              <Image
+                key={i}
+                src={logo.image.url}
+                alt={logo.alt ?? "Logo"}
+                width={140}
+                height={80}
+                className="mx-auto opacity-90"
+              />
+            ) : null
+          )}
         </div>
       )}
 
-      <Button asChild size="lg">
-        <a href={data?.buttonLink ?? "#"}>
-          {data?.buttonText ?? "Get Started"}
-        </a>
-      </Button>
+      {data.ctaLabel && data.ctaLink && (
+        <Button asChild size="lg">
+          <a href={data.ctaLink}>{data.ctaLabel}</a>
+        </Button>
+      )}
     </div>
   );
 }

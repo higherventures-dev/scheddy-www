@@ -1,28 +1,27 @@
 "use client";
 
-import { cn } from "@/lib/utils";
-
-// Local safe props for marketing site
 type FeaturesProps = {
   data?: {
     title?: string;
     subtitle?: string;
-    features?: {
+    items?: {
       icon?: string;
       title?: string;
       description?: string;
     }[];
+    ctaLabel?: string;
+    ctaLink?: string;
   };
 };
 
 export default function Features({ data }: FeaturesProps) {
   if (!data) return null;
 
-  const items = Array.isArray(data.features) ? data.features : [];
+  const items = Array.isArray(data.items) ? data.items : [];
 
   return (
     <div className="max-w-6xl mx-auto px-4">
-      {/* Section Title */}
+
       {(data.title || data.subtitle) && (
         <div className="text-center mb-12">
           {data.title && (
@@ -38,7 +37,6 @@ export default function Features({ data }: FeaturesProps) {
         </div>
       )}
 
-      {/* Features Grid */}
       <div className="grid md:grid-cols-3 gap-10">
         {items.map((feature, i) => (
           <div
@@ -57,6 +55,17 @@ export default function Features({ data }: FeaturesProps) {
           </div>
         ))}
       </div>
+
+      {data.ctaLabel && data.ctaLink && (
+        <div className="text-center mt-12">
+          <a
+            href={data.ctaLink}
+            className="inline-block px-6 py-3 rounded-lg bg-sky-600 text-white"
+          >
+            {data.ctaLabel}
+          </a>
+        </div>
+      )}
     </div>
   );
 }

@@ -1,60 +1,66 @@
-// src/components/marketing/DemoSection.tsx
-
 import Image from "next/image";
-import { cn } from "@/lib/utils";
 
-// Safe fallback type for marketing site:
 type DemoSectionProps = {
   data?: {
+    label?: string;
     title?: string;
-    subtitle?: string;
     items?: {
+      id?: string;
+      icon?: string;
       title?: string;
       description?: string;
-      image?: {
-        url?: string;
-        alt?: string;
-      };
+      image?: { url?: string };
+      alt?: string;
     }[];
+    ctaLabel?: string;
+    ctaLink?: string;
   };
 };
 
 export default function DemoSection({ data }: DemoSectionProps) {
   if (!data) return null;
 
-  const demos = Array.isArray(data.items) ? data.items : [];
+  const items = Array.isArray(data.items) ? data.items : [];
 
   return (
     <section className="container mx-auto text-center px-6">
-      <h2 className="text-3xl font-bold mb-4">
-        {data.title ?? "See Scheddy in Action"}
-      </h2>
 
-      {data.subtitle && (
-        <p className="text-lg text-muted-foreground mb-10">
-          {data.subtitle}
+      {data.label && (
+        <p className="text-xs uppercase tracking-widest text-slate-400 mb-2">
+          {data.label}
         </p>
       )}
 
-      <div className="grid md:grid-cols-2 gap-10">
-        {demos.map((item, index) => (
-          <div key={index} className="space-y-4">
+      {data.title && (
+        <h2 className="text-3xl font-bold mb-10">{data.title}</h2>
+      )}
+
+      <div className="grid md:grid-cols-2 gap-12">
+        {items.map((item, i) => (
+          <div key={i} className="space-y-4 text-left">
             {item.image?.url && (
               <Image
                 src={item.image.url}
-                alt={item.image.alt ?? item.title ?? ""}
+                alt={item.alt ?? item.title ?? ""}
                 width={600}
                 height={360}
-                className="rounded-xl shadow-lg"
+                className="rounded-xl"
               />
             )}
-
             <h3 className="text-xl font-semibold">{item.title}</h3>
-
-            <p className="text-muted-foreground">{item.description}</p>
+            <p className="text-slate-400">{item.description}</p>
           </div>
         ))}
       </div>
+
+      {data.ctaLabel && data.ctaLink && (
+        <a
+          href={data.ctaLink}
+          className="inline-block mt-10 bg-sky-500 text-black px-8 py-4 rounded-full"
+        >
+          {data.ctaLabel}
+        </a>
+      )}
     </section>
   );
 }
