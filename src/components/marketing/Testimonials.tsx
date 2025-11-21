@@ -6,56 +6,44 @@ import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 type Testimonial = {
-  id: string;
-  name: string;
-  role: string;
-  quote: string;
-  image: string;
+  id?: string;
+  name?: string;
+  role?: string;
+  quote?: string;
+  rating?: number;
+  avatar?: {
+    url?: string;
+    alt?: string;
+  };
 };
 
-const testimonials: Testimonial[] = [
-  {
-    id: "artist-1",
-    name: "Mara Ortiz",
-    role: "Tattoo Artist, Oakland",
-    quote:
-      "Scheddy finally killed the DM chaos. My clients book themselves, my day actually flows, and I can focus on drawing instead of juggling messages.",
-    image: "/assets/images/testimonials/mara.jpg",
-  },
-  {
-    id: "studio-1",
-    name: "James Lee",
-    role: "Owner, Night Shift Studio",
-    quote:
-      "We went from three different calendars and a whiteboard to one shared view. Scheddy keeps every artist, room, and walk-in in sync.",
-    image: "/assets/images/testimonials/james.jpg",
-  },
-  {
-    id: "guest-1",
-    name: "Nova Vega",
-    role: "Guest Artist & Traveler",
-    quote:
-      "On the road, I just drop my link and everything lines up — deposits, time zones, and travel days. Scheddy feels like a tour manager in my pocket.",
-    image: "/assets/images/testimonials/nova.jpg",
-  },
-];
+export default function Testimonials({ data }: { data: Testimonial[] }) {
+  // Validate array
+  const items = Array.isArray(data) ? data : [];
+  if (items.length === 0) return null;
 
-export default function Testimonials() {
-  const [activeId, setActiveId] = useState<string>(testimonials[0].id);
-  const active = testimonials.find((t) => t.id === activeId) ?? testimonials[0];
+  // Guarantee IDs
+  const safeItems = items.map((t, i) => ({
+    ...t,
+    _safeId: t.id || `testimonial-${i}`,
+  }));
+
+  const [activeId, setActiveId] = useState<string>(safeItems[0]._safeId);
+
+  const active =
+    safeItems.find((t) => t._safeId === activeId) ?? safeItems[0];
 
   return (
     <div className="max-w-4xl mx-auto px-4 text-center">
-      {/* Quote + person */}
+      {/* Quote Block */}
       <div className="relative">
-        {/* Big quote mark */}
         <div className="pointer-events-none absolute -top-10 left-1/2 -translate-x-1/2 text-7xl md:text-8xl text-slate-700/40">
           &ldquo;
         </div>
 
         <AnimatePresence mode="wait">
           <motion.div
-            key={active.id}
+            key={active._safeId}
             initial={{ opacity: 0, y: 20, rotateX: -8 }}
             animate={{ opacity: 1, y: 0, rotateX: 0 }}
             exit={{ opacity: 0, y: -20, rotateX: 8 }}
@@ -63,28 +51,32 @@ export default function Testimonials() {
             className="space-y-6 pt-6"
           >
             <p className="text-2xl md:text-3xl font-semibold leading-snug text-slate-50">
-              {active.quote}
+              {active.quote || ""}
             </p>
 
             <div className="space-y-1">
               <p className="text-sm font-semibold text-slate-100">
-                {active.name}
+                {active.name || ""}
               </p>
-              <p className="text-xs text-slate-400">{active.role}</p>
+              {active.role && (
+                <p className="text-xs text-slate-400">{active.role}</p>
+              )}
             </div>
           </motion.div>
         </AnimatePresence>
       </div>
 
-      {/* Avatar selector */}
+      {/* Avatar Selector */}
       <div className="mt-10 flex justify-center gap-4">
-        {testimonials.map((t) => {
-          const isActive = t.id === activeId;
+        {safeItems.map((t) => {
+          const isActive = t._safeId === activeId;
+          const avatarURL = t.avatar?.url;
+
           return (
             <button
-              key={t.id}
+              key={t._safeId}
               type="button"
-              onClick={() => setActiveId(t.id)}
+              onClick={() => setActiveId(t._safeId)}
               className={cn(
                 "relative h-12 w-12 rounded-2xl overflow-hidden border transition-all",
                 "focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500",
@@ -93,12 +85,16 @@ export default function Testimonials() {
                   : "border-transparent opacity-50 hover:opacity-80 hover:scale-105"
               )}
             >
-              <Image
-                src={t.image}
-                alt={t.name}
-                fill
-                className="object-cover"
-              />
+              {avatarURL ? (
+                <Image
+                  src={avatarURL}
+                  alt={t.avatar?.alt || t.name || "User"}
+                  fill
+                  className="object-cover"
+                />
+              ) : (
+                <div className="h-full w-full bg-slate-700" />
+              )}
             </button>
           );
         })}
