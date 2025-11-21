@@ -2,7 +2,6 @@
 
 import { Button } from "@/components/ui/button";
 
-// Local safe props (no Payload imports)
 type PricingSectionProps = {
   data?: {
     label?: string;
@@ -15,7 +14,10 @@ type PricingSectionProps = {
       subtitle?: string;
       buttonLabel?: string;
       highlight?: boolean;
-      features?: string[];
+      features?: {
+        id?: string | number;
+        feature?: string;
+      }[];
       detailsLabel?: string;
     }[];
   };
@@ -88,12 +90,12 @@ export default function PricingSection({ data }: PricingSectionProps) {
               </p>
 
               <ul className="mt-4 space-y-2.5 text-sm text-slate-300">
-                {plan.features?.map((feature, fIdx) => (
-                  <li key={fIdx} className="flex gap-2">
+                {plan.features?.map((item, fIdx) => (
+                  <li key={item.id ?? fIdx} className="flex gap-2">
                     <span className="mt-1 inline-flex h-4 w-4 items-center justify-center rounded-full bg-emerald-500/20 text-[10px] text-emerald-400">
                       ✓
                     </span>
-                    <span>{feature}</span>
+                    <span>{item.feature}</span>
                   </li>
                 ))}
               </ul>
