@@ -19,7 +19,7 @@ type FaqSectionProps = {
   };
 };
 
-export default function FaqSection({ data }: FaqSectionProps) {
+export default function FaqSection({ data }: { data?: any | null }) {
   if (!data) return null;
 
   // Choose selected or fallback FAQ list

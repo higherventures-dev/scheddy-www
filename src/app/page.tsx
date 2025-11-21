@@ -60,14 +60,15 @@ export default async function HomePage() {
       {/* FAQS */}
       <section id="faqs" className="scroll-mt-24 py-20">
         <Reveal>
-          <FaqSection data={page.faqs} />
+          <FaqSection data={page.faqs ?? null} />
         </Reveal>
       </section>
 
       {/* TESTIMONIALS */}
       <section id="testimonials" className="scroll-mt-24 py-20">
         <Reveal>
-          <Testimonials data={page.testimonials} />
+          <Testimonials data={page.testimonials ?? []} />
+
         </Reveal>
       </section>
 
