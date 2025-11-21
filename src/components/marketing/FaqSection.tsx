@@ -3,14 +3,31 @@
 import FaqList from "./FaqList";
 import { Reveal } from "./Reveal";
 
-export default function FaqSection({ data }) {
+// Local safe prop type for marketing site
+type FaqSectionProps = {
+  data?: {
+    title?: string;
+    subtitle?: string;
+    faqs?: {
+      question?: string;
+      answer?: string;
+    }[];
+    allFaqs?: {
+      question?: string;
+      answer?: string;
+    }[];
+  };
+};
+
+export default function FaqSection({ data }: FaqSectionProps) {
   if (!data) return null;
 
-  const selectedFaqs = Array.isArray(data.faqs) ? data.faqs : [];
-  const allFaqs = Array.isArray(data.allFaqs) ? data.allFaqs : [];
-
-  // Prefer homepage-selected FAQs, otherwise fallback to global
-  const faqs = selectedFaqs.length > 0 ? selectedFaqs : allFaqs;
+  // Choose selected or fallback FAQ list
+  const selectedFaqs = Array.isArray(data.faqs)
+    ? data.faqs
+    : Array.isArray(data.allFaqs)
+    ? data.allFaqs
+    : [];
 
   return (
     <div className="max-w-5xl mx-auto px-4" id="faqs">
@@ -28,9 +45,9 @@ export default function FaqSection({ data }) {
         </div>
       </Reveal>
 
-      <Reveal delay={0.1}>
-        <FaqList faqs={faqs} />
-      </Reveal>
+      {/* <Reveal delay={0.1}>
+        <FaqList faqs={selectedFaqs} />
+      </Reveal> */}
     </div>
   );
 }

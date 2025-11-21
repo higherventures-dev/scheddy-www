@@ -1,73 +1,82 @@
 "use client";
 
-import Link from "next/link";
 import Image from "next/image";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
-export default function Hero({ data }) {
+// Local safe props — no Payload imports, fully compatible with CMS shape
+type HeroProps = {
+  data?: {
+    headline?: string;
+    subheadline?: string;
+    ctaLabel?: string;
+    ctaLink?: string;
+    backgroundVideo?: {
+      url?: string;
+    };
+    backgroundImage?: {
+      url?: string;
+      alt?: string;
+    };
+  };
+};
+
+export default function Hero({ data }: HeroProps) {
   if (!data) return null;
 
   const videoUrl = data.backgroundVideo?.url;
-  const logoUrl = data.logo?.url || "/assets/images/logo.svg";
-  const logoAlt = data.logoAlt || "Logo";
+  const imageUrl = data.backgroundImage?.url;
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden px-6">
+    <div className="relative w-full h-[90vh] flex items-center justify-center overflow-hidden bg-black">
       {/* Background video */}
       {videoUrl && (
         <video
-          className="absolute inset-0 h-full w-full object-cover opacity-70 pointer-events-none"
-          src={videoUrl}
+          className="absolute inset-0 w-full h-full object-cover opacity-40"
           autoPlay
-          muted
           loop
+          muted
           playsInline
+        >
+          <source src={videoUrl} type="video/mp4" />
+        </video>
+      )}
+
+      {/* Background image */}
+      {!videoUrl && imageUrl && (
+        <Image
+          src={imageUrl}
+          alt={data.backgroundImage?.alt || "Background"}
+          fill
+          className="object-cover opacity-30"
         />
       )}
 
-      {/* Dark overlay */}
-      <div className="absolute inset-0 bg-black/75" />
+      {/* Overlay */}
+      <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
+        {data.headline && (
+          <h1 className="text-4xl md:text-6xl font-bold text-white drop-shadow-lg">
+            {data.headline}
+          </h1>
+        )}
 
-      {/* Content */}
-      <div className="relative z-10 max-w-4xl text-center">
-        {/* Logo */}
-        <div className="flex justify-center mb-6">
-          <Link href="/" className="flex items-center gap-2">
-            <Image src={logoUrl} alt={logoAlt} width={48} height={48} />
-          </Link>
-        </div>
-
-        {/* Title */}
-        <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold leading-tight text-slate-50">
-          {data.title}
-          {data.showTrademark && (
-            <sup className="text-xs align-super ml-1">TM</sup>
-          )}
-        </h1>
-
-        {/* Subtitle */}
-        {data.subtitle && (
-          <p className="mt-4 text-sm md:text-base text-slate-200 max-w-2xl mx-auto">
-            {data.subtitle}
+        {data.subheadline && (
+          <p className="mt-4 text-lg md:text-xl text-slate-200">
+            {data.subheadline}
           </p>
         )}
 
-        {/* CTA */}
-        {(data.ctaLabel || data.ctaLink) && (
-          <div className="flex flex-col items-center justify-center gap-4 mt-8">
-            <Button
-              asChild
-              size="sm"
-              variant="outline"
-              className="btn-pulse rounded-full px-8 bg-white text-slate-900 border-white hover:bg-slate-100"
-            >
-              <Link href={data.ctaLink || "#features"}>
-                {data.ctaLabel || "Learn More"}
-              </Link>
+        {data.ctaLabel && data.ctaLink && (
+          <div className="mt-8">
+            <Button asChild className="px-8 py-4 text-sm md:text-base font-semibold rounded-full">
+              <Link href={data.ctaLink}>{data.ctaLabel}</Link>
             </Button>
           </div>
         )}
       </div>
-    </section>
+
+      {/* Gradient overlay bottom */}
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/40 to-black" />
+    </div>
   );
 }
