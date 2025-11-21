@@ -53,7 +53,7 @@ export default async function HomePage() {
       {/* CTA (Get Started) */}
       <section id="contact" className="scroll-mt-24 py-20">
         <Reveal>
-          <Cta data={page.cta} />
+          <Cta/>
         </Reveal>
       </section>
 
