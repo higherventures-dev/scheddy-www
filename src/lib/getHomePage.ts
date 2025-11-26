@@ -3,10 +3,8 @@ export async function getHomePageContent() {
     const base = process.env.NEXT_PUBLIC_PAYLOAD_URL;
     if (!base) throw new Error("Missing NEXT_PUBLIC_PAYLOAD_URL");
 
-    // ------------------------------
-    // ⭐ Load Homepage Document
-    // ------------------------------
-    const homeRes = await fetch(`${base}/api/home-page?limit=1`, {
+    // Load home-page document
+    const homeRes = await fetch(`${base}/api/home-page?limit=1&depth=2`, {
       next: { revalidate: 30 },
     });
 
@@ -19,33 +17,14 @@ export async function getHomePageContent() {
     const page = homeData.docs?.[0];
     if (!page) return null;
 
-    // ------------------------------
-    // ⭐ Load FAQs (from relationship or load all)
-    // ------------------------------
-    let faqs = [];
+    // Extract FAQ data
+    const faqSection = page.faq ?? {};
 
-    if (page.faq?.faqItems?.length) {
-      // Selected FAQs
-      const ids = page.faq.faqItems.join(",");
-      const faqRes = await fetch(`${base}/api/faqs?where[id][in]=${ids}`, {
-        next: { revalidate: 30 },
-      });
+    const faqsArray =
+      Array.isArray(faqSection.faqItems) && faqSection.faqItems.length > 0
+        ? faqSection.faqItems
+        : []; // fallback
 
-      const faqData = await faqRes.json();
-      faqs = faqData.docs ?? [];
-    } else {
-      // Load ALL FAQs
-      const faqRes = await fetch(`${base}/api/faqs?sort=-updatedAt`, {
-        next: { revalidate: 30 },
-      });
-
-      const faqData = await faqRes.json();
-      faqs = faqData.docs ?? [];
-    }
-
-    // ------------------------------
-    // ⭐ Return Clean Homepage Object
-    // ------------------------------
     return {
       hero: page.hero ?? null,
       features: page.features ?? null,
@@ -53,17 +32,20 @@ export async function getHomePageContent() {
       pricing: page.pricing ?? null,
       ctaShowcase: page.ctaShowcase ?? null,
 
-      // ⭐ FAQ SECTION SETTINGS (title, subtitle)
-      faqSection: page.faq ?? { title: "", subtitle: "" },
+      // FAQ section
+      faqSection: {
+        title: faqSection.title ?? "Frequently Asked Questions",
+        subtitle: faqSection.subtitle ?? "",
+      },
 
-      // ⭐ Loaded FAQ docs
-      faqs,
+      // The actual FAQ items
+      faqs: faqsArray,
 
-      // ⭐ Testimonials disabled until re-enabled
-      testimonials: null,
+      // Testimonials
+      testimonials: page.testimonials ?? null,
     };
-  } catch (error) {
-    console.error("❌ Error loading homepage content:", error);
+  } catch (err) {
+    console.error("❌ Error loading homepage content:", err);
     return null;
   }
 }
