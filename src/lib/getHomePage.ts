@@ -19,13 +19,32 @@ export async function getHomePageContent() {
     const page = homeData.docs?.[0];
     if (!page) return null;
 
-    // ======================================================
-    // Since FAQ + Testimonials groups are REMOVED in schema,
-    // we SKIP loading them entirely.
-    // ======================================================
+    // ------------------------------
+    // ⭐ Load FAQs (from relationship or load all)
+    // ------------------------------
+    let faqs = [];
+
+    if (page.faq?.faqItems?.length) {
+      // Selected FAQs
+      const ids = page.faq.faqItems.join(",");
+      const faqRes = await fetch(`${base}/api/faqs?where[id][in]=${ids}`, {
+        next: { revalidate: 30 },
+      });
+
+      const faqData = await faqRes.json();
+      faqs = faqData.docs ?? [];
+    } else {
+      // Load ALL FAQs
+      const faqRes = await fetch(`${base}/api/faqs?sort=-updatedAt`, {
+        next: { revalidate: 30 },
+      });
+
+      const faqData = await faqRes.json();
+      faqs = faqData.docs ?? [];
+    }
 
     // ------------------------------
-    // ⭐ Return Sanitized Homepage Data
+    // ⭐ Return Clean Homepage Object
     // ------------------------------
     return {
       hero: page.hero ?? null,
@@ -34,8 +53,13 @@ export async function getHomePageContent() {
       pricing: page.pricing ?? null,
       ctaShowcase: page.ctaShowcase ?? null,
 
-      // These purposely return null because schema has them removed
-      faqs: null,
+      // ⭐ FAQ SECTION SETTINGS (title, subtitle)
+      faqSection: page.faq ?? { title: "", subtitle: "" },
+
+      // ⭐ Loaded FAQ docs
+      faqs,
+
+      // ⭐ Testimonials disabled until re-enabled
       testimonials: null,
     };
   } catch (error) {
