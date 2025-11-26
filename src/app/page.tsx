@@ -47,25 +47,25 @@ export default async function HomePage() {
         </Reveal>
       </section>
 
-      {/* CTA (Contact / Get Started) */}
+      {/* CTA */}
       <section id="contact" className="scroll-mt-24 py-20">
         <Reveal>
           <Cta />
         </Reveal>
       </section>
 
+      {/* FAQ SECTION */}
       <section id="faqs" className="scroll-mt-24 py-20">
-  <Reveal>
-    <FaqSection
-      data={{
-        title: page.faqSection?.title ?? "Frequently Asked Questions",
-        subtitle: page.faqSection?.subtitle ?? "",
-        faqs: page.faqs ?? [],
-      }}
-    />
-  </Reveal>
-</section>
-
+        <Reveal>
+          <FaqSection
+            data={{
+              title: page.faqSection?.title ?? "Frequently Asked Questions",
+              subtitle: page.faqSection?.subtitle ?? "",
+              faqs: page.faqSection?.faqItems ?? [], // ← FIXED
+            }}
+          />
+        </Reveal>
+      </section>
 
       {/* TESTIMONIALS */}
       <section id="testimonials" className="scroll-mt-24 py-20">

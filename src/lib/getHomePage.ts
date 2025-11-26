@@ -3,7 +3,6 @@ export async function getHomePageContent() {
     const base = process.env.NEXT_PUBLIC_PAYLOAD_URL;
     if (!base) throw new Error("Missing NEXT_PUBLIC_PAYLOAD_URL");
 
-    // Load home-page document
     const homeRes = await fetch(`${base}/api/home-page?limit=1&depth=2`, {
       next: { revalidate: 30 },
     });
@@ -17,13 +16,9 @@ export async function getHomePageContent() {
     const page = homeData.docs?.[0];
     if (!page) return null;
 
-    // Extract FAQ data
     const faqSection = page.faq ?? {};
-
-    const faqsArray =
-      Array.isArray(faqSection.faqItems) && faqSection.faqItems.length > 0
-        ? faqSection.faqItems
-        : []; // fallback
+    const faqItems =
+      Array.isArray(faqSection.faqItems) ? faqSection.faqItems : [];
 
     return {
       hero: page.hero ?? null,
@@ -32,16 +27,12 @@ export async function getHomePageContent() {
       pricing: page.pricing ?? null,
       ctaShowcase: page.ctaShowcase ?? null,
 
-      // FAQ section
       faqSection: {
         title: faqSection.title ?? "Frequently Asked Questions",
         subtitle: faqSection.subtitle ?? "",
+        faqItems, // ← ADD THIS LINE
       },
 
-      // The actual FAQ items
-      faqs: faqsArray,
-
-      // Testimonials
       testimonials: page.testimonials ?? null,
     };
   } catch (err) {
