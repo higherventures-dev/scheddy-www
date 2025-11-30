@@ -3,8 +3,7 @@ export async function getHomePageContent() {
     const base = process.env.NEXT_PUBLIC_PAYLOAD_URL;
     if (!base) throw new Error("Missing NEXT_PUBLIC_PAYLOAD_URL");
 
-    // Load home-page document
-    const homeRes = await fetch(`${base}/api/home-page?limit=1&depth=2`, {
+    const homeRes = await fetch(`${base}/api/home-page?limit=1&depth=3`, {
       next: { revalidate: 30 },
     });
 
@@ -15,32 +14,27 @@ export async function getHomePageContent() {
 
     const homeData = await homeRes.json();
     const page = homeData.docs?.[0];
+
     if (!page) return null;
 
-    // Extract FAQ data
-    const faqSection = page.faq ?? {};
-
-    // Relationship items (Faqs)
-    const faqItems =
-      Array.isArray(faqSection.faqItems) && faqSection.faqItems.length > 0
-        ? faqSection.faqItems
-        : [];
+    // Extract FAQ safely
+    const faq = page.faq ?? {};
+    const faqItems = Array.isArray(faq.faqItems) ? faq.faqItems : [];
 
     return {
       hero: page.hero ?? null,
       features: page.features ?? null,
       demo: page.demo ?? null,
       pricing: page.pricing ?? null,
-      ctaShowcase: page.ctaShowcase ?? null,
 
-      // ⭐ FIXED → returns faqItems inside faqSection (marketing site expects this!)
       faqSection: {
-        title: faqSection.title ?? "Frequently Asked Questions",
-        subtitle: faqSection.subtitle ?? "",
-        faqItems, // ← the key fix
+        title: faq.title ?? "Frequently Asked Questions",
+        subtitle: faq.subtitle ?? "",
+        faqItems,
       },
 
-      testimonials: page.testimonials ?? null,
+      testimonials: page.testimonials ?? [],
+      ctaShowcase: page.ctaShowcase ?? null,
     };
   } catch (err) {
     console.error("❌ Error loading homepage content:", err);

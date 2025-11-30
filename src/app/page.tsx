@@ -59,9 +59,9 @@ export default async function HomePage() {
         <Reveal>
           <FaqSection
             data={{
-              title: page.faqSection?.title ?? "Frequently Asked Questions",
-              subtitle: page.faqSection?.subtitle ?? "",
-              faqs: page.faqSection?.faqItems ?? [], // ← FIXED
+              title: page.faqSection.title,
+              subtitle: page.faqSection.subtitle,
+              faqs: page.faqSection.faqItems,
             }}
           />
         </Reveal>
