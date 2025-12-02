@@ -4,6 +4,7 @@ import Cta from "@/components/marketing/Cta";
 import Testimonials from "@/components/marketing/Testimonials";
 import { Reveal } from "@/components/marketing/Reveal";
 import DemoSection from "@/components/marketing/DemoSection";
+import ProductTour from "@/components/marketing/ProductTour";
 import PricingSection from "@/components/marketing/PricingSection";
 import FaqSection from "@/components/marketing/FaqSection";
 import CtaShowcase from "@/components/marketing/CtaShowcase";
@@ -37,6 +38,13 @@ export default async function HomePage() {
       <section id="demo" className="scroll-mt-24 py-20 bg-black/75">
         <Reveal>
           <DemoSection data={page.demo} />
+        </Reveal>
+      </section>
+
+      {/* PRODUCT TOUR */}
+      <section id="tour" className="scroll-mt-24 py-20">
+        <Reveal>
+          <ProductTour data={page.productTour} />
         </Reveal>
       </section>
 

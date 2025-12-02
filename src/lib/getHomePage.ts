@@ -14,18 +14,35 @@ export async function getHomePageContent() {
 
     const homeData = await homeRes.json();
     const page = homeData.docs?.[0];
-
     if (!page) return null;
 
-    // Extract FAQ safely
+    // ================
+    // ⭐ FAQ extraction
+    // ================
     const faq = page.faq ?? {};
     const faqItems = Array.isArray(faq.faqItems) ? faq.faqItems : [];
+
+    // ============================
+    // ⭐ Product Tour extraction
+    // ============================
+    const productTour = page.productTour ?? {};
+    const productTourSteps = Array.isArray(productTour.steps)
+      ? productTour.steps
+      : [];
 
     return {
       hero: page.hero ?? null,
       features: page.features ?? null,
-      demo: page.demo ?? null,
+      demo: page.demo ?? null, // OLD demo section remains available
       pricing: page.pricing ?? null,
+
+      // New Product Tour block
+      productTour: {
+        label: productTour.label ?? "",
+        title: productTour.title ?? "",
+        subtitle: productTour.subtitle ?? "",
+        steps: productTourSteps,
+      },
 
       faqSection: {
         title: faq.title ?? "Frequently Asked Questions",
