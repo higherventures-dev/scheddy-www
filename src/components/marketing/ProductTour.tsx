@@ -3,7 +3,26 @@
 import { useState } from "react";
 import Image from "next/image";
 
-export default function ProductTour({ data }) {
+type ProductTourStep = {
+  icon?: string;
+  name: string;
+  description: string;
+  image: {
+    url: string;
+  };
+};
+
+type ProductTourProps = {
+  data: {
+    label?: string;
+    title?: string;
+    subtitle?: string;
+    steps: ProductTourStep[];
+  };
+};
+
+
+export default function ProductTour({ data }: ProductTourProps) {
   if (!data || !data.steps) return null;
 
   const [active, setActive] = useState(0);
