@@ -3,7 +3,6 @@ import Features from "@/components/marketing/Features";
 import Cta from "@/components/marketing/Cta";
 import Testimonials from "@/components/marketing/Testimonials";
 import { Reveal } from "@/components/marketing/Reveal";
-import DemoSection from "@/components/marketing/DemoSection";
 import ProductTour from "@/components/marketing/ProductTour";
 import PricingSection from "@/components/marketing/PricingSection";
 import FaqSection from "@/components/marketing/FaqSection";
@@ -34,19 +33,14 @@ export default async function HomePage() {
         </Reveal>
       </section>
 
-      {/* DEMO */}
-      <section id="demo" className="scroll-mt-24 py-20 bg-black/75">
-        <Reveal>
-          <DemoSection data={page.demo} />
-        </Reveal>
-      </section>
-
       {/* PRODUCT TOUR */}
-      <section id="tour" className="scroll-mt-24 py-20">
-        <Reveal>
-          <ProductTour data={page.productTour} />
-        </Reveal>
-      </section>
+      {page.productTour?.steps?.length > 0 && (
+        <section id="tour" className="scroll-mt-24 py-20">
+          <Reveal>
+            <ProductTour data={page.productTour} />
+          </Reveal>
+        </section>
+      )}
 
       {/* PRICING */}
       <section id="pricing" className="scroll-mt-24 py-20">
@@ -67,27 +61,31 @@ export default async function HomePage() {
         <Reveal>
           <FaqSection
             data={{
-              title: page.faqSection.title,
-              subtitle: page.faqSection.subtitle,
-              faqs: page.faqSection.faqItems,
+              title: page.faqSection?.title ?? "Frequently Asked Questions",
+              subtitle: page.faqSection?.subtitle ?? "",
+              faqs: page.faqSection?.faqItems ?? [],
             }}
           />
         </Reveal>
       </section>
 
       {/* TESTIMONIALS */}
-      <section id="testimonials" className="scroll-mt-24 py-20">
-        <Reveal>
-          <Testimonials data={page.testimonials ?? []} />
-        </Reveal>
-      </section>
+      {Array.isArray(page.testimonials) && page.testimonials.length > 0 && (
+        <section id="testimonials" className="scroll-mt-24 py-20">
+          <Reveal>
+            <Testimonials data={page.testimonials} />
+          </Reveal>
+        </section>
+      )}
 
       {/* CTA SHOWCASE */}
-      <section className="scroll-mt-24">
-        <Reveal>
-          <CtaShowcase data={page.ctaShowcase} />
-        </Reveal>
-      </section>
+      {page.ctaShowcase && (
+        <section className="scroll-mt-24">
+          <Reveal>
+            <CtaShowcase data={page.ctaShowcase} />
+          </Reveal>
+        </section>
+      )}
     </>
   );
 }
